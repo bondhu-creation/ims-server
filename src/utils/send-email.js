@@ -24,7 +24,7 @@ async function send_email(options) {
       try {
             // Normalize recipients
             const mailOptions = {
-                  from: `"StockFlow" <${process.env.AUTOMATION_EMAIL}>`,
+                  from: `"IMS" <${process.env.AUTOMATION_EMAIL}>`,
                   to: Array.isArray(options.to) ? options.to.join(', ') : options.to,
                   cc: options.cc ? (Array.isArray(options.cc) ? options.cc.join(', ') : options.cc) : undefined,
                   bcc: options.bcc ? (Array.isArray(options.bcc) ? options.bcc.join(', ') : options.bcc) : undefined,
