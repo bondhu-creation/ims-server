@@ -76,7 +76,7 @@ const send_otp = async (request, otp, user_name) => {
 
       const options = {
             to: request.credentials.user_id,
-            subject: 'OTP Verification - StockFlow',
+            subject: 'OTP Verification - IMS',
             html
       };
 
