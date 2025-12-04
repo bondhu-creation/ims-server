@@ -130,7 +130,38 @@ const generate_data_sql = (request) => {
                         COALESCE(COUNT(DISTINCT bd.batch_code), 0) AS total_batches,
                         COALESCE(SUM(bd.quantity_available)::INTEGER, 0) AS total_available_quantity,
                         bool_or(bd.status = 'pending_pricing') AS has_pending_pricing,
-                        BOOL_OR(bd.intended_use = 'for_sale') AS has_for_sale_batch
+                        BOOL_OR(bd.intended_use = 'for_sale') AS has_for_sale_batch,
+                        COALESCE(SUM(bd.quantity_available * bd.cost_price), 0) AS total_stock_cost,
+                        COALESCE(SUM(
+                              CASE 
+                                    WHEN bd.intended_use = 'for_sale' 
+                                    AND bd.status = 'ready_for_sale'
+                                    AND bd.selling_price IS NOT NULL
+                                    THEN bd.quantity_available * bd.selling_price
+                                    ELSE 0
+                              END
+                        ), 0) AS expected_revenue,
+                        COALESCE(
+                              SUM(
+                                    CASE 
+                                    WHEN bd.intended_use = 'for_sale' 
+                                          AND bd.status = 'ready_for_sale' 
+                                          AND bd.selling_price IS NOT NULL
+                                    THEN (bd.quantity_available * bd.selling_price)
+                                    ELSE 0
+                                    END
+                              ), 0
+                        )
+                        -
+                        COALESCE(
+                              SUM(
+                                    CASE 
+                                    WHEN bd.intended_use = 'for_sale'
+                                    THEN (bd.quantity_available * bd.cost_price)
+                                    ELSE 0
+                                    END
+                              ), 0
+                        ) AS potential_profit
                    FROM ${TABLE.PRODUCT} p 
                    INNER JOIN ${TABLE.INVENTORY} bd ON bd.product_oid = p.oid  
                   LEFT JOIN ${TABLE.CATEGORIES} c ON c.oid = p.category_oid 
