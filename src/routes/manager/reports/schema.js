@@ -11,7 +11,7 @@ const product_wise_stock_report_schema = Joi.object({
 });
 
 const generic_oid_schema = Joi.object({
-      oid: Joi.string().allow(null, '').optional(),
+      oid: Joi.string().required(),
 });
 
 module.exports = { current_stock_report_schema, product_wise_stock_report_schema, generic_oid_schema };

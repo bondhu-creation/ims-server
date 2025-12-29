@@ -30,7 +30,7 @@ router.post(
 
 router.post(
       ROUTES.GET_PURCHASE_ORDER_REPORT,
-      [jwtMiddleware, validator.get(generic_oid_schema)],
+      [jwtMiddleware, validator.post(generic_oid_schema)],
       get_purchase_order_report
 );
 
