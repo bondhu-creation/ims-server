@@ -4,6 +4,7 @@ const { SUB_CONTEXTS } = require("../../utils/constant");
 const { saleRouter } = require("./sale/route");
 const { invoiceRouter } = require("./invoice/route");
 const { productReturnRouter } = require("./product-return/route");
+const { reportsRouter } = require("./reports/route");
 
 const router = Router();
 
@@ -12,6 +13,7 @@ router.use(SUB_CONTEXTS.ATTENDANCE, attendanceRouter);
 router.use(SUB_CONTEXTS.SALE, saleRouter);
 router.use(SUB_CONTEXTS.INVOICE, invoiceRouter);
 router.use(SUB_CONTEXTS.PRODUCT_RETURN, productReturnRouter);
+router.use(SUB_CONTEXTS.REPORTS, reportsRouter);
 
 // If you have other routes, you can add them here.
 // Example: adminRouter.use("/other-module", otherModuleRouter);
