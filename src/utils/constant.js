@@ -23,6 +23,7 @@ module.exports = {
             PRODUCT_RETURN: "product_return",
             RETURN_DETAILS: "return_details",
             PRODUCT_DISPOSE: "product_dispose",
+            STOCK_ADJUSTMENT: "stock_adjustment",
             OTP_LOG: "otp_log",
             USER_NOTES: "user_notes"
       },
@@ -49,6 +50,7 @@ module.exports = {
             INVOICE: "/invoice",
             PRODUCT_RETURN: "/product-return",
             PRODUCT_DISPOSE: "/product-dispose",
+            STOCK_ADJUSTMENT: "/stock-adjustment",
             CHANGE_PASSWORD: "/change-password",
             PROFILE_INFO: "/profile-info",
             DASHBOARD: "/dashboard",
@@ -144,6 +146,11 @@ module.exports = {
             GET_PRODUCT_DISPOSE_DETAILS: "/get-product-dispose-details",
             GET_PRODUCT_LIST_FOR_DISPOSE_DROPDOWN: "/get-product-list-for-dispose-dropdown",
 
+            GET_STOCK_ADJUSTMENT_LIST: "/get-stock-adjustment-list",
+            CREATE_STOCK_ADJUSTMENT: "/create-stock-adjustment",
+            GET_STOCK_ADJUSTMENT_DETAILS: "/get-stock-adjustment-details",
+            GET_BATCH_LIST_FOR_ADJUSTMENT_DROPDOWN: "/get-batch-list-for-adjustment-dropdown",
+
             CHANGE_PASSWORD: "/change-user-password",
             VERIFY_OTP_FOR_PASSWORD_CHANGE: "/verify-otp-for-password-change",
 
@@ -156,6 +163,8 @@ module.exports = {
             GET_PRODUCT_WISE_STOCK_REPORT: "/get-product-wise-stock-report",
             
             GET_PURCHASE_ORDER_REPORT: "/get-purchase-order-report",
+
+            GET_STOCK_ADJUSTMENT_REPORT: "/get-stock-adjustment-report",
 
             // Notes
             GET_USER_NOTE_LIST: "/get-note-list",

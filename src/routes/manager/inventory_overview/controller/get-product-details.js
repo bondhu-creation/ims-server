@@ -65,8 +65,19 @@ const generate_batch_data_sql = (request) => {
                   AND i.selling_price IS NOT NULL
             THEN (i.quantity_available * (i.selling_price - i.cost_price))
             ELSE 0
-      END AS potential_profit
-            from ${TABLE.INVENTORY} i 
+      END AS potential_profit,
+      COALESCE(adj.total_increased, 0)::INTEGER AS total_increased,
+      COALESCE(adj.total_decreased, 0)::INTEGER AS total_decreased,
+      COALESCE(adj.adjustment_count, 0)::INTEGER AS adjustment_count
+            from ${TABLE.INVENTORY} i
+            left join (
+                  SELECT inventory_oid,
+                        SUM(CASE WHEN adjustment_type = 'increase' THEN quantity ELSE 0 END) AS total_increased,
+                        SUM(CASE WHEN adjustment_type = 'decrease' THEN quantity ELSE 0 END) AS total_decreased,
+                        COUNT(*) AS adjustment_count
+                  FROM ${TABLE.STOCK_ADJUSTMENT}
+                  GROUP BY inventory_oid
+            ) adj ON adj.inventory_oid = i.oid
             left join ${TABLE.PURCHASE_DETAILS} pd ON pd.oid = i.purchase_details_oid
             left join ${TABLE.PURCHASE} p ON p.oid = pd.purchase_oid
             left join ${TABLE.WAREHOUSE} w on w.oid = pd.warehouse_oid 

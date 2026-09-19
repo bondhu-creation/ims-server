@@ -1,5 +1,5 @@
 const pool = require('./db.config');
-const log = require('./log');
+const { log } = require('./log');
 
 // Retry logic for transient connection errors
 const retryQuery = async (queryFn, maxRetries = 3) => {
@@ -79,9 +79,40 @@ const execute_values = async (query) => {
     });
 };
 
+// Runs a handler inside a single transaction, handing it the client so the
+// handler can read rows it is about to update (SELECT ... FOR UPDATE) and abort
+// by throwing. execute_values cannot do this: it takes a fixed statement list
+// and discards rowCount, so a statement matching zero rows still looks like
+// success.
+const execute_in_transaction = async (handler) => {
+    return retryQuery(async () => {
+        const client = await pool.connect();
+        try {
+            await client.query("BEGIN");
+            const result = await handler(client);
+            await client.query("COMMIT");
+            return result;
+        } catch (e) {
+            try {
+                await client.query("ROLLBACK");
+            } catch (rollbackError) {
+                log.error("Error during rollback: ", rollbackError);
+            }
+            throw e;
+        } finally {
+            try {
+                client.release();
+            } catch (releaseError) {
+                log.error("Error releasing client: ", releaseError);
+            }
+        }
+    });
+};
+
 module.exports = {
     get_data,
     execute_value,
     execute_values,
+    execute_in_transaction,
 };
 

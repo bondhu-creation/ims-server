@@ -10,8 +10,13 @@ const product_wise_stock_report_schema = Joi.object({
       product_oid: Joi.string().allow(null, '').optional(),
 });
 
+const stock_adjustment_report_schema = Joi.object({
+      product_oid: Joi.string().allow(null, '').optional(),
+      date_range: Joi.array().items(Joi.string().allow(null, '')).length(2).allow(null).optional(),
+});
+
 const generic_oid_schema = Joi.object({
       oid: Joi.string().required(),
 });
 
-module.exports = { current_stock_report_schema, product_wise_stock_report_schema, generic_oid_schema };
+module.exports = { current_stock_report_schema, product_wise_stock_report_schema, stock_adjustment_report_schema, generic_oid_schema };

@@ -12,7 +12,8 @@ const pool = new Pool({
     idleTimeoutMillis: 60000, // 60 seconds before closing idle connections
     connectionTimeoutMillis: 10000, // 10 seconds - increased for cloud databases
     maxUses: 7500,
-    ssl: { rejectUnauthorized: false },
+    // Cloud databases need SSL; a local development instance does not. Absent DB_SSL keeps SSL on.
+    ssl: process.env.DB_SSL === 'false' ? false : { rejectUnauthorized: false },
     // Add query timeout to prevent hanging queries
     query_timeout: 30000, // 30 seconds query timeout
     statement_timeout: 30000, // 30 seconds statement timeout
