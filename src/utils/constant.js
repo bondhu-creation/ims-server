@@ -55,6 +55,7 @@ module.exports = {
             PROFILE_INFO: "/profile-info",
             DASHBOARD: "/dashboard",
             REPORTS: "/reports",
+            INVENTORY: "/inventory",
             NOTES: "/notes"
       },
       ROUTES: {

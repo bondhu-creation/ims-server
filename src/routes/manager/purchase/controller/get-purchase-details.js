@@ -34,7 +34,9 @@ const get_purchase_details = async (request, res) => {
 };
 
 const generate_purchase_data_sql = (request) => {
-      let query = `SELECT pr.oid, pr.supplier_oid, pr.total_amount, pr.special_notes, pr.payment_status, pr.paid_amount, pr.purchase_type, pr.status, pr.created_by, to_char(pr.created_on, 'DD/MM/YYYY') as created_on, pr.cancelled_by, to_char(pr.cancelled_on, 'DD/MM/YYYY') as cancelled_on, pr.verified_by, to_char(pr.verified_on, 'DD/MM/YYYY') as verified_on, sup.name as supplier_name FROM ${TABLE.PURCHASE} pr LEFT JOIN ${TABLE.SUPPLIER} sup ON sup.oid = pr.supplier_oid WHERE pr.oid = $1`;
+      let query = `SELECT pr.oid, pr.supplier_oid, pr.total_amount, pr.special_notes, pr.payment_status, pr.paid_amount, pr.purchase_type, pr.status, pr.created_by, to_char(pr.created_on, 'DD/MM/YYYY') as created_on, pr.cancelled_by, to_char(pr.cancelled_on, 'DD/MM/YYYY') as cancelled_on, pr.verified_by, to_char(pr.verified_on, 'DD/MM/YYYY') as verified_on, sup.name as supplier_name,
+      (SELECT i.batch_code FROM ${TABLE.INVENTORY} i INNER JOIN ${TABLE.PURCHASE_DETAILS} bpd ON bpd.oid = i.purchase_details_oid WHERE bpd.purchase_oid = pr.oid LIMIT 1) as batch_code
+      FROM ${TABLE.PURCHASE} pr LEFT JOIN ${TABLE.SUPPLIER} sup ON sup.oid = pr.supplier_oid WHERE pr.oid = $1`;
       let values = [request.query.oid];
 
       return { text: query, values };
