@@ -167,6 +167,8 @@ module.exports = {
 
             GET_STOCK_ADJUSTMENT_REPORT: "/get-stock-adjustment-report",
 
+            GET_DAILY_SALES_REPORT: "/get-daily-sales-report",
+
             // Notes
             GET_USER_NOTE_LIST: "/get-note-list",
             GET_USER_NOTE_DETAILS: "/get-note-details",
