@@ -55,11 +55,41 @@ const get_dashboard_data = async (req, res) => {
                               FROM ${TABLE.SALE_DETAILS} sd
                               LEFT JOIN ${TABLE.SALES} sa ON sd.sales_oid = sa.oid
                               LEFT JOIN ${TABLE.PRODUCT} p ON sd.product_oid = p.oid
-                              WHERE EXTRACT(MONTH FROM sa.created_on) = EXTRACT(MONTH FROM CURRENT_DATE)
+                              WHERE sa.status != 'Draft'
+                              AND EXTRACT(MONTH FROM sa.created_on) = EXTRACT(MONTH FROM CURRENT_DATE)
                               AND EXTRACT(YEAR FROM sa.created_on) = EXTRACT(YEAR FROM CURRENT_DATE)
                               GROUP BY sd.product_oid, p.name
                               ORDER BY total_sold DESC
-                              LIMIT 5
+                              LIMIT 20
+                        ) t
+                        ),
+                        slow_moving_products AS (
+                        -- Active products with sellable stock, fewest units sold this month first (unsold = 0).
+                        SELECT json_agg(row_to_json(t)) AS slow_moving_products_this_month
+                        FROM (
+                              SELECT p.oid AS product_oid, p.name AS product_name,
+                                    stock.available_quantity,
+                                    COALESCE(sold.total_sold, 0) AS total_sold
+                              FROM ${TABLE.PRODUCT} p
+                              INNER JOIN (
+                                    SELECT product_oid, SUM(quantity_available) AS available_quantity
+                                    FROM ${TABLE.INVENTORY}
+                                    WHERE status = 'ready_for_sale' AND intended_use = 'for_sale'
+                                    GROUP BY product_oid
+                                    HAVING SUM(quantity_available) > 0
+                              ) stock ON stock.product_oid = p.oid
+                              LEFT JOIN (
+                                    SELECT sd.product_oid, SUM(sd.quantity) AS total_sold
+                                    FROM ${TABLE.SALE_DETAILS} sd
+                                    INNER JOIN ${TABLE.SALES} sa ON sd.sales_oid = sa.oid
+                                    WHERE sa.status != 'Draft'
+                                    AND EXTRACT(MONTH FROM sa.created_on) = EXTRACT(MONTH FROM CURRENT_DATE)
+                                    AND EXTRACT(YEAR FROM sa.created_on) = EXTRACT(YEAR FROM CURRENT_DATE)
+                                    GROUP BY sd.product_oid
+                              ) sold ON sold.product_oid = p.oid
+                              WHERE p.status = 'Active'
+                              ORDER BY total_sold ASC, stock.available_quantity DESC, p.name ASC
+                              LIMIT 20
                         ) t
                         ),
                         top_suppliers AS (
@@ -95,6 +125,7 @@ const get_dashboard_data = async (req, res) => {
                         (SELECT recent_sales FROM recent_sales),
                         (SELECT salesman_sales_this_month FROM salesman_sales),
                         (SELECT trending_products_this_month FROM trending_products),
+                        (SELECT slow_moving_products_this_month FROM slow_moving_products),
                         (SELECT top_suppliers_this_month FROM top_suppliers),
                         (SELECT total_purchase_this_month FROM total_purchase);`,
                   values: []

@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const { ROUTES } = require("../../../utils/constant");
-const { current_stock_report_schema, product_wise_stock_report_schema, stock_adjustment_report_schema, daily_sales_report_schema, generic_oid_schema } = require("./schema");
+const { current_stock_report_schema, product_wise_stock_report_schema, stock_adjustment_report_schema, daily_sales_report_schema, generic_oid_schema, trending_products_report_schema, slow_moving_products_report_schema } = require("./schema");
 const get_current_stock_report = require("./controller/get-current-stock-report");
 const jwtMiddleware = require("../../../utils/validate-jwt");
 const { validator } = require("../../../utils/validator");
@@ -9,6 +9,8 @@ const get_product_wise_stock_report = require("./controller/get-product-wise-sto
 const get_purchase_order_report = require("./controller/get-purchase-order-report");
 const get_stock_adjustment_report = require("./controller/get-stock-adjustment-report");
 const get_daily_sales_report = require("./controller/get-daily-sales-report");
+const get_trending_products_report = require("./controller/get-trending-products-report");
+const get_slow_moving_products_report = require("./controller/get-slow-moving-products-report");
 
 const router = Router();
 
@@ -48,6 +50,18 @@ router.post(
       ROUTES.GET_DAILY_SALES_REPORT,
       [jwtMiddleware, validator.post(daily_sales_report_schema)],
       get_daily_sales_report
+);
+
+router.post(
+      ROUTES.GET_TRENDING_PRODUCTS_REPORT,
+      [jwtMiddleware, validator.post(trending_products_report_schema)],
+      get_trending_products_report
+);
+
+router.post(
+      ROUTES.GET_SLOW_MOVING_PRODUCTS_REPORT,
+      [jwtMiddleware, validator.post(slow_moving_products_report_schema)],
+      get_slow_moving_products_report
 );
 
 

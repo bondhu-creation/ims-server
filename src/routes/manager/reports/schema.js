@@ -24,4 +24,13 @@ const generic_oid_schema = Joi.object({
       oid: Joi.string().required(),
 });
 
-module.exports = { current_stock_report_schema, product_wise_stock_report_schema, stock_adjustment_report_schema, daily_sales_report_schema, generic_oid_schema };
+// date_range is optional: without it the report covers all sales on record.
+const product_movement_report_schema = Joi.object({
+      date_range: Joi.array().items(Joi.string().allow(null, '')).length(2).allow(null).optional(),
+      category_oid: Joi.string().allow(null, '').optional(),
+});
+
+const trending_products_report_schema = product_movement_report_schema;
+const slow_moving_products_report_schema = product_movement_report_schema;
+
+module.exports = { current_stock_report_schema, product_wise_stock_report_schema, stock_adjustment_report_schema, daily_sales_report_schema, generic_oid_schema, trending_products_report_schema, slow_moving_products_report_schema };
